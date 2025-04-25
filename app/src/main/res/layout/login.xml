@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="top|center_horizontal"
+    android:background="#FFFFFF">
+
+    <!-- Username -->
+    <ImageView
+        android:id="@+id/logo_vertic"
+        android:layout_width="196dp"
+        android:layout_height="196dp"
+        android:layout_marginTop="64dp"
+        android:contentDescription="Vertical Stack Logo"
+        android:src="@drawable/vertical_stack_medium" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:hint="Username"
+        app:boxBackgroundMode="outline"
+        app:boxCornerRadiusTopStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusBottomEnd="12dp"
+        app:boxStrokeColor="@color/stroke_selector"
+        app:boxStrokeWidth="1dp"
+        app:startIconDrawable="@drawable/ic_profile"
+        app:startIconTint="#000000">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextName"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:backgroundTint="@android:color/transparent"
+            android:fontFamily="@font/inter_18pt_light"
+            android:inputType="textPersonName"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Password -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="Password"
+        app:boxBackgroundMode="outline"
+        app:boxCornerRadiusTopStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusBottomEnd="12dp"
+        app:boxStrokeColor="@color/stroke_selector"
+        app:boxStrokeWidth="1dp"
+        app:startIconDrawable="@drawable/ic_lock"
+        app:startIconTint="#000000"
+        app:endIconMode="password_toggle">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@android:color/transparent"
+            android:fontFamily="@font/inter_18pt_light"
+            android:inputType="textPassword"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:padding="16dp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- LOGIN Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="LOGIN"
+        android:textAllCaps="false"
+        android:layout_marginTop="24dp"
+        android:textColor="#FFFFFF"
+        android:fontFamily="@font/inter_18pt_bold"
+        app:cornerRadius="12dp"
+        app:iconPadding="8dp"
+        app:backgroundTint="#1D41F9" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnforgotPassWord"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="FORGOT PASSWORD"
+        android:textAllCaps="false"
+        android:layout_marginTop="24dp"
+        android:textColor="#6B7580"
+        android:fontFamily="@font/inter_18pt_bold"
+        app:cornerRadius="12dp"
+        app:iconPadding="8dp"
+        app:backgroundTint="#FFFF" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="24dp">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/loginToRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Don’t have an account?"
+            android:fontFamily="@font/inter_24pt_regular"
+            android:textSize="16sp"
+            android:textColor="#000000" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/registerHere"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Register here"
+            android:fontFamily="@font/inter_24pt_regular"
+            android:textSize="16sp"
+            android:textColor="#2196F3"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground" />
+    </LinearLayout>
+
+</LinearLayout>
