@@ -75,12 +75,12 @@ private TextInputEditText editTextEmail, editTextPassword;
                 url,
                 requestBody,
                 response -> {
-                    Toast.makeText(this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
                     // Có thể chuyển sang màn hình khác tại đây nếu cần
                 },
                 error -> {
-                    Toast.makeText(this, "Lỗi khi đăng ký: " + error.toString(), Toast.LENGTH_LONG).show();
-                    Log.e("RegisterError", "Lỗi khi đăng ký", error);
+                    Toast.makeText(this, "Lỗi khi đăng nhập: " + error.toString(), Toast.LENGTH_LONG).show();
+                    Log.e("LoginError", "Lỗi khi đăng nhập", error);
                 }
         );
 
