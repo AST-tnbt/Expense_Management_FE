@@ -1,8 +1,8 @@
 package com.example.expense_management;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
@@ -22,25 +22,24 @@ import com.google.android.material.textfield.TextInputEditText;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class register extends AppCompatActivity {
+public class Register extends AppCompatActivity {
 
     private TextInputEditText editTextName, editTextEmail, editTextPassword, editTextConfirmPassword, dateOfBirthInput;
     private AutoCompleteTextView genderDropdown;
     private MaterialButton btnRegister;
-
     private RequestQueue requestQueue; // Volley request queue
-
+    private String baseUrl;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_register);
+        setContentView(R.layout.register);
 
+        baseUrl = BuildConfig.BASE_URL;
         // Khởi tạo UI
         editTextName = findViewById(R.id.editTextName);
         editTextEmail = findViewById(R.id.editTextEmail);
@@ -110,7 +109,7 @@ public class register extends AppCompatActivity {
         }
 
         // URL API backend
-        String url = "http://10.0.2.2:8080/auth/signup"; // Nếu bạn dùng Emulator
+        String url = baseUrl + "/auth/signup";
 
         // Gửi request
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
@@ -119,7 +118,8 @@ public class register extends AppCompatActivity {
                 requestBody,
                 response -> {
                     Toast.makeText(this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
-                    // Có thể chuyển sang màn hình khác tại đây nếu cần
+                    Intent intent = new Intent(Register.this, MainActivity.class);
+                    startActivity(intent);
                 },
                 error -> {
                     Toast.makeText(this, "Lỗi khi đăng ký: " + error.toString(), Toast.LENGTH_LONG).show();

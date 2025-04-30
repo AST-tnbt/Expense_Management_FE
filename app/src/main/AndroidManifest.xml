@@ -18,8 +18,14 @@
             android:name=".NewPassword"
             android:exported="false" />
         <activity
-            android:name=".register"
+            android:name=".Register"
             android:exported="false" />
+        <activity
+            android:name=".Dashboard"
+            android:exported="false"/>
+        <activity
+            android:name=".AddExpense"
+            android:exported="false"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">
