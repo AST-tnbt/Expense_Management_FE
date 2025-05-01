@@ -1,10 +1,11 @@
-package com.example.expense_management;
+package com.example.expense_management.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -14,6 +15,9 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.expense_management.BuildConfig;
+import com.example.expense_management.R;
+import com.example.expense_management.api.ApiService;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
@@ -96,7 +100,9 @@ public class MainActivity extends AppCompatActivity {
                         editor.putString("refresh_token", refreshToken);
                         editor.apply();
                         Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(MainActivity.this, Dashboard.class);
+                        ApiService apiService = new ApiService(this, Volley.newRequestQueue(this));
+                        apiService.getInfo(accessToken);
+                        Intent intent = new Intent(MainActivity.this, FragmentActivity.class);
                         startActivity(intent);
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
@@ -136,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
                         editor.apply();
 
                         Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_LONG).show();
-                        Intent intent = new Intent(MainActivity.this, Dashboard.class);
+                        Intent intent = new Intent(MainActivity.this, FragmentActivity.class);
                         startActivity(intent);
                     } catch (JSONException e) {
                         throw new RuntimeException(e);

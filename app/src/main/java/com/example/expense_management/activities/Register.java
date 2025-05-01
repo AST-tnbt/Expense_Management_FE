@@ -1,4 +1,4 @@
-package com.example.expense_management;
+package com.example.expense_management.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +14,8 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.expense_management.BuildConfig;
+import com.example.expense_management.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -47,7 +49,7 @@ public class Register extends AppCompatActivity {
         editTextConfirmPassword = findViewById(R.id.editTextConfirm_Password);
         dateOfBirthInput = findViewById(R.id.dateOfBirthInput);
         genderDropdown = findViewById(R.id.genderDropdown);
-        btnRegister = findViewById(R.id.btnLogin); // Bạn đặt id button là btnLogin nhưng text là REGISTER
+        btnRegister = findViewById(R.id.btnSignup);
 
         // Gender dropdown
         String[] genders = new String[]{"Nam", "Nữ"};
