@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:hint="Username"
+        android:hint="Họ tên"
         app:boxBackgroundMode="outline"
         app:boxCornerRadiusTopStart="12dp"
         app:boxCornerRadiusTopEnd="12dp"
@@ -120,6 +120,7 @@
             android:id="@+id/genderDropdown"
             android:layout_width="match_parent"
             android:layout_height="56dp"
+            android:fontFamily="@font/inter_18pt_light"
             android:inputType="none" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -183,7 +184,7 @@
 
     <!-- LOGIN Button -->
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnLogin"
+        android:id="@+id/btnSignup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="REGISTER"

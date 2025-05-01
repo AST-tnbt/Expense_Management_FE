@@ -1,4 +1,4 @@
-package com.example.expense_management;
+package com.example.expense_management.activities;
 
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
@@ -6,18 +6,13 @@ import android.widget.AutoCompleteTextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.expense_management.adapters.EntryAdapter;
-import com.example.expense_management.models.Entry;
+import com.example.expense_management.R;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 public class AddExpense extends AppCompatActivity {
