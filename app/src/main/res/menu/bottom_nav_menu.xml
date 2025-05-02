@@ -1,0 +1,27 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/home_24px"
+        android:title="Home"
+        android:orderInCategory="1"/>
+    <item
+        android:id="@+id/nav_task"
+        android:icon="@drawable/fact_check_24px"
+        android:title="Task"
+        android:orderInCategory="2"/>
+
+    <item
+        android:title="FAB"
+        android:orderInCategory="3"/>
+
+    <item
+        android:id="@+id/nav_notification"
+        android:icon="@drawable/notifications_24px"
+        android:title="Notification"
+        android:orderInCategory="4"/>
+    <item
+        android:id="@+id/nav_settings"
+        android:icon="@drawable/settings_24px"
+        android:title="Settings"
+        android:orderInCategory="5"/>
+</menu>
