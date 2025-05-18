@@ -1,4 +1,4 @@
-package com.example.expense_management.configs;
+package com.example.expense_management.activities;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
