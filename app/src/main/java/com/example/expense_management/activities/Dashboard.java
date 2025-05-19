@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.expense_management.R;
 import com.example.expense_management.adapters.EntryAdapter;
 import com.example.expense_management.models.Entry;
+import com.google.android.material.card.MaterialCardView;
 
 import java.util.Arrays;
 import java.util.List;
@@ -40,7 +41,7 @@ public class Dashboard extends Fragment {
 
 
         /*xử lí click*/
-        LinearLayout layoutChiTiet = view.findViewById(R.id.ivProfile);
+        MaterialCardView layoutChiTiet = view.findViewById(R.id.cardExpense);
         layoutChiTiet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -48,7 +49,7 @@ public class Dashboard extends Fragment {
                 startActivity(intent);
             }
         });
-        LinearLayout cardLayout= view.findViewById(R.id.cardTarget);
+        MaterialCardView cardLayout= view.findViewById(R.id.cardTarget);
         cardLayout.setOnClickListener(new View.OnClickListener()
         {
             @Override

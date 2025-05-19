@@ -55,6 +55,7 @@ public class ApiService {
                         editor.putString("gender", gender);
                         editor.putString("id", id);
                         editor.apply();
+
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
                     }

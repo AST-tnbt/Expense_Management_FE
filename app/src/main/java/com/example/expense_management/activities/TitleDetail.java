@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,6 +36,7 @@ public class TitleDetail extends AppCompatActivity {
     private CategoryAdapter categoryAdapter;
     private List<Category> categoryList;
     private String base_url;
+    private ImageButton addCategoryButton ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,13 @@ public class TitleDetail extends AppCompatActivity {
         categoryRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         categoryList = new ArrayList<>();
+        addCategoryButton = findViewById(R.id.addCategoryButton); // <-- Thêm dòng này để ánh xạ nút
+
+        addCategoryButton.setOnClickListener(v -> {
+            // Xử lý khi người dùng nhấn nút thêm danh mục
+            Intent intent = new Intent(TitleDetail.this, addTitle.class); // Thay bằng tên activity bạn tạo
+            startActivity(intent);
+        });
         categoryAdapter = new CategoryAdapter(this, categoryList, new CategoryAdapter.OnItemClickListener() {
             @Override
             public void onEditClick(int position) {
@@ -100,8 +109,8 @@ public class TitleDetail extends AppCompatActivity {
     }
 
     private void loadCategoriesFromApi() {
-        SharedPreferences tokenStore = getSharedPreferences("TokenStore", Context.MODE_PRIVATE);
-        String userIdStr = tokenStore.getString("id", null);
+        SharedPreferences userStore = getSharedPreferences("UserStore", Context.MODE_PRIVATE);
+        String userIdStr =userStore.getString("id", null);
 
         if (userIdStr == null) {
             Toast.makeText(this, "Không tìm thấy userId", Toast.LENGTH_SHORT).show();
