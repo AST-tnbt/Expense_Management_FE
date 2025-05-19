@@ -1,5 +1,7 @@
 package com.example.expense_management.api;
 
+import static com.example.expense_management.BuildConfig.BASE_URL;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,12 +9,17 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.expense_management.BuildConfig;
 import com.example.expense_management.activities.FragmentActivity;
 import com.example.expense_management.activities.MainActivity;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+
+import java.util.UUID;
 
 public class ApiService {
     private final Context context;
@@ -22,7 +29,7 @@ public class ApiService {
     public ApiService(Context context, RequestQueue requestQueue) {
         this.context = context;
         this.requestQueue = requestQueue;
-        this.baseUrl = BuildConfig.BASE_URL;
+        this.baseUrl = BASE_URL;
     }
 
     public void getInfo(String accessToken) {
@@ -66,5 +73,48 @@ public class ApiService {
         };
         requestQueue.add(jsonObjectRequest);
     }
+    public interface ExpenseCallback {
+        void onSuccess(JSONArray expenseList);
+        void onError(String errorMessage);
+    }
+
+    public static void fetchExpensesByUserId(Context context, UUID userId, ExpenseCallback callback) {
+        String url = "http://10.0.2.2:8000/expenses/" + userId;
+
+        RequestQueue queue = Volley.newRequestQueue(context);
+
+        JsonArrayRequest request = new JsonArrayRequest(
+                Request.Method.GET,
+                url,
+                null,
+                response -> {
+                    // Trả kết quả về MainActivity
+                    callback.onSuccess(response);
+                },
+                error -> {
+                    callback.onError(error.toString());
+                    Toast.makeText(context, "Lỗi khi gọi API", Toast.LENGTH_SHORT).show();
+                }
+        );
+
+        queue.add(request);
+    }
+    public static void fetchCategoriesByUserId(Context context, UUID userId, CategoryCallback callback) {
+        String url = BASE_URL + "/categories/" + userId; // Điều chỉnh URL nếu khác
+
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
+                callback::onSuccess,
+                error -> callback.onError(error.toString())
+        );
+
+        RequestQueue queue = Volley.newRequestQueue(context);
+        queue.add(jsonArrayRequest);
+    }
+
+    public interface CategoryCallback {
+        void onSuccess(JSONArray categoryArray);
+        void onError(String errorMessage);
+    }
+
 }
 

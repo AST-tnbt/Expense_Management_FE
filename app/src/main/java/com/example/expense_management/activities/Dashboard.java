@@ -1,9 +1,11 @@
-package com.example.expense_management.configs;
+package com.example.expense_management.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -36,6 +38,27 @@ public class Dashboard extends Fragment {
         EntryAdapter adapter = new EntryAdapter(entries);
         recyclerView.setAdapter(adapter);
 
+
+        /*xử lí click*/
+        LinearLayout layoutChiTiet = view.findViewById(R.id.ivProfile);
+        layoutChiTiet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(requireContext(), ExpenseDetails.class);
+                startActivity(intent);
+            }
+        });
+        LinearLayout cardLayout= view.findViewById(R.id.cardTarget);
+        cardLayout.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(requireContext(),TitleDetail.class);
+                startActivity(intent);
+            }
+        });
         return view;
     }
+
+
 }
