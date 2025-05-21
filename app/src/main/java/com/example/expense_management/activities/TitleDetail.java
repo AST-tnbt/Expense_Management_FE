@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -18,6 +19,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.expense_management.R;
 import com.example.expense_management.adapters.CategoryAdapter;
 import com.example.expense_management.api.ApiService;
+import com.example.expense_management.dtos.CategoriesResponse;
 import com.example.expense_management.models.Category;
 
 import org.json.JSONArray;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class TitleDetail extends AppCompatActivity {
@@ -58,6 +61,7 @@ public class TitleDetail extends AppCompatActivity {
             @Override
             public void onEditClick(int position) {
                 Category category = categoryList.get(position);
+                Log.d("DEBUG", "cateId: " + category.getCateId());
                 Intent intent = new Intent(TitleDetail.this, EditCategoryActivity.class);
                 intent.putExtra("category", category);
                 startActivity(intent);
@@ -65,40 +69,32 @@ public class TitleDetail extends AppCompatActivity {
 
             @Override
             public void onDeleteClick(int position) {
-                    Category category = categoryList.get(position);
-                    UUID categoryId = category.getCateId(); // Giả sử bạn có id trong model Category
+                Category category = categoryList.get(position);
+                UUID categoryId = category.getCateId();
 
-                    String url = "http://10.0.2.2:8000/categories" + categoryId; // API xóa theo ID
+                // Lấy token từ SharedPreferences
+                SharedPreferences prefs = getSharedPreferences("TokenStore", Context.MODE_PRIVATE);
+                String accessToken = prefs.getString("access_token", null);
 
-                    // Khởi tạo RequestQueue
-                    RequestQueue queue = Volley.newRequestQueue(TitleDetail.this);
+                if (categoryId == null) {
+                    Toast.makeText(TitleDetail.this, "Thiếu thông tin khi xoá", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                    // Tạo request DELETE
-                    StringRequest deleteRequest = new StringRequest(Request.Method.DELETE, url,
-                            response -> {
-                                Toast.makeText(TitleDetail.this, "Xóa thành công", Toast.LENGTH_SHORT).show();
-
-                                // Xóa khỏi list và cập nhật UI
-                                categoryList.remove(position);
-                                categoryAdapter.notifyItemRemoved(position);
-                            },
-                            error -> {
-                                Toast.makeText(TitleDetail.this, "Xóa thất bại: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                    ) {
-                        @Override
-                        public Map<String, String> getHeaders() {
-                            Map<String, String> headers = new HashMap<>();
-                            // Nếu API cần token thì thêm header ở đây
-                            SharedPreferences tokenStore = getSharedPreferences("TokenStore", Context.MODE_PRIVATE);
-                            String token = tokenStore.getString("token", "");
-                            headers.put("Authorization", "Bearer " + token);
-                            return headers;
+                ApiService apiService = new ApiService(TitleDetail.this,Volley.newRequestQueue(TitleDetail.this));
+                apiService.deleteCategory(
+                        accessToken,
+                        categoryId,
+                        result -> {
+                            Toast.makeText(TitleDetail.this, "Xoá thành công", Toast.LENGTH_SHORT).show();
+                            categoryList.remove(position);
+                            categoryAdapter.notifyItemRemoved(position);
+                        },
+                        errorMsg -> {
+                            Log.e("DELETE_ERROR", errorMsg);
+                            Toast.makeText(TitleDetail.this, "Xoá thất bại: " + errorMsg, Toast.LENGTH_SHORT).show();
                         }
-                    };
-
-                    // Thêm request vào queue
-                    queue.add(deleteRequest);
+                );
                 }
 
 
@@ -109,45 +105,37 @@ public class TitleDetail extends AppCompatActivity {
     }
 
     private void loadCategoriesFromApi() {
-        SharedPreferences userStore = getSharedPreferences("UserStore", Context.MODE_PRIVATE);
-        String userIdStr =userStore.getString("id", null);
+        SharedPreferences userPrefs = getSharedPreferences("UserStore", Context.MODE_PRIVATE);
+        String userIdStr = userPrefs.getString("id", null);
+        SharedPreferences tokenPrefs = getSharedPreferences("TokenStore", Context.MODE_PRIVATE);
+        String accessToken = tokenPrefs.getString("access_token", null);
 
-        if (userIdStr == null) {
-            Toast.makeText(this, "Không tìm thấy userId", Toast.LENGTH_SHORT).show();
+        if (userIdStr == null || accessToken == null) {
+            Toast.makeText(this, "Thiếu thông tin đăng nhập", Toast.LENGTH_SHORT).show();
             return;
         }
 
         UUID userId = UUID.fromString(userIdStr);
 
-        ApiService.fetchCategoriesByUserId(this, userId, new ApiService.CategoryCallback() {
-            @Override
-            public void onSuccess(JSONArray categoryArray) {
-                categoryList.clear();
-                for (int i = 0; i < categoryArray.length(); i++) {
-                    try {
-                        JSONObject obj = categoryArray.getJSONObject(i);
-                        String title = obj.getString("title");
-                        String iconIdStr = obj.getString("iconId");
-
-                        int iconResId = getResources().getIdentifier(iconIdStr, "drawable", getPackageName());
-                        if (iconResId == 0) {
-                            iconResId = R.drawable.cake_24px; // icon mặc định nếu không tìm thấy
-                        }
-
-                        categoryList.add(new Category(iconResId, title));
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+        ApiService apiService = new ApiService(this, Volley.newRequestQueue(this));
+        apiService.fetchCategoriesByUserId(
+                accessToken,
+                userId,
+                categories -> {
+                    categoryList.clear();
+                    for (CategoriesResponse res : categories) {
+                        int iconResId = getResources().getIdentifier(res.getIconId(), "drawable", getPackageName());
+                        if (iconResId == 0) iconResId = R.drawable.cake_24px;
+                        categoryList.add(new Category(res.getCateId(), iconResId, res.getTitle()));
                     }
+                    runOnUiThread(() -> categoryAdapter.notifyDataSetChanged());
+                },
+                error -> {
+                    Log.e("CategoryLoadError", error);
+                    Toast.makeText(TitleDetail.this, "Lỗi khi tải danh sách danh mục", Toast.LENGTH_SHORT).show();
                 }
-
-                runOnUiThread(() -> categoryAdapter.notifyDataSetChanged());
-            }
-
-            @Override
-            public void onError(String errorMessage) {
-                Toast.makeText(TitleDetail.this, "Lỗi khi tải danh sách danh mục", Toast.LENGTH_SHORT).show();
-            }
-        });
+        );
     }
+
+
 }

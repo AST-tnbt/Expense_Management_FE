@@ -28,7 +28,7 @@
         app:boxCornerRadiusBottomEnd="12dp"
         app:boxStrokeColor="@color/stroke_selector"
         app:boxStrokeWidth="1dp"
-        app:startIconDrawable="@drawable/category_24px"
+        app:startIconDrawable="@drawable/list_alt_24px"
         app:startIconTint="#000000"
         android:padding="20dp">
 
@@ -43,7 +43,6 @@
             android:textSize="16sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!--email-->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/iconInputLayout"
         android:layout_width="match_parent"

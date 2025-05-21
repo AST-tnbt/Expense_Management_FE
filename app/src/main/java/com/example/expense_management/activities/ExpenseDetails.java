@@ -13,9 +13,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.toolbox.Volley;
 import com.example.expense_management.R;
 import com.example.expense_management.adapters.EntryAdapter;
 import com.example.expense_management.api.ApiService;
+import com.example.expense_management.dtos.ExpenseResponse;
 import com.example.expense_management.models.Entry;
 
 import org.json.JSONArray;
@@ -50,49 +52,38 @@ public class ExpenseDetails extends Fragment {
     }
 
     private void loadExpenses() {
-        SharedPreferences tokenStore = requireContext().getSharedPreferences("TokenStore", Context.MODE_PRIVATE);
-        String userIdString = tokenStore.getString("id", null);
+        SharedPreferences userPrefs = requireContext().getSharedPreferences("UserStore", Context.MODE_PRIVATE);
+        String userIdStr = userPrefs.getString("id", null);
+        SharedPreferences tokenPrefs = requireContext().getSharedPreferences("TokenStore", Context.MODE_PRIVATE);
+        String accessToken = tokenPrefs.getString("access_token", null);
 
-        if (userIdString != null) {
-            UUID userId = UUID.fromString(userIdString);
+        if (userIdStr == null || accessToken == null) {
+            Toast.makeText(getContext(), "Thiếu thông tin đăng nhập", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-            ApiService.fetchExpensesByUserId(requireContext(), userId, new ApiService.ExpenseCallback() {
-                @Override
-                public void onSuccess(JSONArray expenseList) {
+        UUID userId = UUID.fromString(userIdStr);
+        ApiService apiService = new ApiService(requireContext(), Volley.newRequestQueue(requireContext()));
+
+        apiService.fetchExpensesByUserId(
+                accessToken,
+                userId,
+                expenseResponses -> {
                     entries.clear();
-                    for (int i = 0; i < expenseList.length(); i++) {
-                        try {
-                            JSONObject obj = expenseList.getJSONObject(i);
-                            String date = obj.getString("date");
-                            String spend = obj.getString("spend");
-                            String category = obj.getString("categoryName");
-                            String iconIdStr = obj.getString("iconId"); // ví dụ: "lunch_dining_24px"
+                    for (ExpenseResponse res : expenseResponses) {
+                        int iconResId = getResources().getIdentifier(
+                                res.getIconId(), "drawable", requireContext().getPackageName());
+                        if (iconResId == 0) iconResId = R.drawable.cake_24px;
 
-                            int iconResId = getResources().getIdentifier(
-                                    iconIdStr, "drawable", requireContext().getPackageName());
-
-                            if (iconResId == 0) {
-                                iconResId = R.drawable.cake_24px;
-                            }
-
-                            entries.add(new Entry(iconResId, category, date, spend + " VNĐ"));
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        entries.add(new Entry(iconResId, res.getCategoryName(), res.getDate(), res.getSpend() + " VNĐ"));
                     }
                     requireActivity().runOnUiThread(() -> adapter.notifyDataSetChanged());
+                },
+                error -> {
+                    Log.e("ExpenseLoadError", error);
+                    Toast.makeText(getContext(), "Lỗi khi tải dữ liệu chi tiêu", Toast.LENGTH_SHORT).show();
                 }
-
-                @Override
-                public void onError(String errorMessage) {
-                    Log.e("API_ERROR", errorMessage);
-                    Toast.makeText(requireContext(), "Lỗi khi tải dữ liệu chi tiêu", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-        } else {
-            Toast.makeText(requireContext(), "Không tìm thấy userId", Toast.LENGTH_SHORT).show();
-        }
+        );
     }
+
 }
