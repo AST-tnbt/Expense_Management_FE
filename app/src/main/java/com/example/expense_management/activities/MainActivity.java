@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // URL API backend
-        String url = baseUrl + "/auth/login";
+        String url ="http://10.0.2.2:8000/auth/login";
 
         // Gửi request
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(

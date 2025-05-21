@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:gravity="center_vertical">
+
+    <!-- Icon -->
+    <ImageView
+        android:id="@+id/categoryIcon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/lunch_dining_24px"
+        android:contentDescription="Icon"
+        android:layout_marginEnd="8dp"/>
+
+    <!-- Tên category -->
+    <TextView
+        android:id="@+id/categoryName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Ăn uống"
+        android:fontFamily="@font/inter_18pt_semibold"/>
+
+    <!-- Nút sửa -->
+    <ImageButton
+        android:id="@+id/editButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_edit"
+        android:contentDescription="Sửa"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_marginStart="8dp"/>
+
+    <!-- Nút xóa -->
+    <ImageButton
+        android:id="@+id/deleteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/delete_24px"
+        android:contentDescription="Xóa"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_marginStart="4dp"/>
+
+</LinearLayout>

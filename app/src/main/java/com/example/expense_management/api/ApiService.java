@@ -1,5 +1,7 @@
 package com.example.expense_management.api;
 
+import static com.example.expense_management.BuildConfig.BASE_URL;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,12 +11,16 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.expense_management.BuildConfig;
 import com.example.expense_management.activities.FragmentActivity;
 import com.example.expense_management.activities.MainActivity;
 import com.example.expense_management.dtos.CategoriesCallback;
 import com.example.expense_management.dtos.CategoriesResponse;
+import com.example.expense_management.dtos.ExpenseResponse;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,6 +32,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import java.util.UUID;
+
 public class ApiService {
     private final Context context;
     private final RequestQueue requestQueue;
@@ -34,7 +42,7 @@ public class ApiService {
     public ApiService(Context context, RequestQueue requestQueue) {
         this.context = context;
         this.requestQueue = requestQueue;
-        this.baseUrl = BuildConfig.BASE_URL;
+        this.baseUrl = BASE_URL;
     }
 
     public void getInfo(String accessToken) {
@@ -78,6 +86,111 @@ public class ApiService {
         };
         requestQueue.add(jsonObjectRequest);
     }
+    public interface ExpenseCallback {
+        void onSuccess(JSONArray expenseList);
+        void onError(String errorMessage);
+    }
+
+    public void fetchExpensesByUserId(
+            String accessToken,
+            UUID userId,
+            SuccessListenerExpense successCallback,
+            ErrorListenerExpense errorCallback
+    ) {
+        String url = baseUrl + "/expenses/" + userId;
+
+        JsonArrayRequest request = new JsonArrayRequest(
+                Request.Method.GET,
+                url,
+                null,
+                response -> {
+                    try {
+                        List<ExpenseResponse> expenseList = new ArrayList<>();
+                        for (int i = 0; i < response.length(); i++) {
+                            JSONObject obj = response.getJSONObject(i);
+                            String date = obj.getString("date");
+                            String spend = obj.getString("spend");
+                            String categoryName = obj.getString("categoryName");
+                            String iconId = obj.getString("iconId");
+
+                            expenseList.add(new ExpenseResponse(date, spend, categoryName, iconId));
+                        }
+                        successCallback.onSuccess(expenseList);
+                    } catch (JSONException e) {
+                        errorCallback.onError("Lỗi xử lý dữ liệu JSON");
+                    }
+                },
+                error -> errorCallback.onError("Lỗi kết nối: " + error.toString())
+        ) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + accessToken);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+
+        requestQueue.add(request);
+    }
+
+    public void fetchCategoriesByUserId(
+            String accessToken,
+            UUID userId,
+            SuccessListener successCallback,
+            ErrorListener errorCallback
+    ) {
+        String url = baseUrl + "/categories/" + userId;
+
+        JsonArrayRequest request = new JsonArrayRequest(
+                Request.Method.GET,
+                url,
+                null,
+                response -> {
+                    try {
+                        List<CategoriesResponse> categories = new ArrayList<>();
+                        for (int i = 0; i < response.length(); i++) {
+                            JSONObject obj = response.getJSONObject(i);
+                            String cateIdStr = obj.getString("cateId");
+                            UUID cateId = UUID.fromString(cateIdStr);
+                            String title = obj.getString("title");
+                            String iconId = obj.getString("iconId");
+                            categories.add(new CategoriesResponse(cateId,title, iconId));
+                        }
+                        successCallback.onSuccess(categories);
+                    } catch (JSONException e) {
+                        errorCallback.onError("Lỗi xử lý dữ liệu JSON");
+                    }
+                },
+                error -> errorCallback.onError("Lỗi kết nối: " + error.toString())
+        ) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + accessToken);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+
+        requestQueue.add(request);
+    }
+
+    public interface SuccessListener {
+        void onSuccess(List<CategoriesResponse> categories);
+    }
+
+    public interface ErrorListener {
+        void onError(String errorMessage);
+    }
+    public interface SuccessListenerExpense {
+        void onSuccess(List<ExpenseResponse> categories);
+    }
+
+    public interface ErrorListenerExpense {
+        void onError(String errorMessage);
+    }
+
 
     public void getAllCategories(String accessToken, CategoriesCallback callback) {
         String url = baseUrl + "/categories";
@@ -153,5 +266,103 @@ public class ApiService {
 
         requestQueue.add(request);
     }
+    public void addCategory(String token, String userId, String title, String iconId,
+                            Runnable onSuccess, Consumer<String> onError) {
+
+        String url = BASE_URL + "/categories";
+
+        try {
+            JSONObject body = new JSONObject();
+            body.put("title", title);
+            body.put("iconId", iconId);
+            body.put("userId", userId);
+
+            JsonObjectRequest request = new JsonObjectRequest(
+                    Request.Method.POST,
+                    url,
+                    body,
+                    response -> onSuccess.run(),
+                    error -> {
+                        String errMsg = error.getMessage() != null ? error.getMessage() : "Unknown error";
+                        onError.accept(errMsg);
+                    }
+            ) {
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("Authorization", "Bearer " + token);
+                    headers.put("Content-Type", "application/json");
+                    return headers;
+                }
+            };
+
+            requestQueue.add(request);
+
+        } catch (JSONException e) {
+            onError.accept("Lỗi JSON: " + e.getMessage());
+        }
+    }
+    public void updateCategory(String accessToken, UUID cateId, String title, String iconId, String userId,
+                               Runnable onSuccess, Consumer<String> onError) {
+        String url = "http://10.0.2.2:8000/categories/" + cateId;
+
+
+        try {
+            JSONObject body = new JSONObject();
+            body.put("cateId", cateId.toString());
+            body.put("title", title);
+            body.put("iconId", iconId);
+            body.put("userId", userId);
+
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, url, body,
+                    response -> onSuccess.run(),
+                    error -> onError.accept(error.toString())
+            ) {
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("Authorization", "Bearer " + accessToken);
+                    return headers;
+                }
+            };
+
+            requestQueue.add(request);
+
+        } catch (JSONException e) {
+            onError.accept("Lỗi tạo JSON: " + e.getMessage());
+        }
+    }
+    public void deleteCategory(
+            String accessToken,
+            UUID categoryId,
+            SuccessListener successCallback,
+            ErrorListener errorCallback
+    ) {
+        String url = baseUrl + "/categories/" + categoryId;
+
+        StringRequest deleteRequest = new StringRequest(
+                Request.Method.DELETE,
+                url,
+                response -> successCallback.onSuccess(null),
+                error -> {
+                    String errorMessage = "Lỗi xoá danh mục";
+                    if (error.networkResponse != null && error.networkResponse.data != null) {
+                        errorMessage = new String(error.networkResponse.data);
+                    }
+                    errorCallback.onError(errorMessage);
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + accessToken);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+
+        requestQueue.add(deleteRequest);
+    }
+
 }
 
