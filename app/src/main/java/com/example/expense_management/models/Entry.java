@@ -1,10 +1,23 @@
 package com.example.expense_management.models;
 
+import java.util.UUID;
+
 public class Entry {
+    private UUID ExpenseId;
     private int iconResId;
     private String title;
     private String date;
     private String amount;
+    private UUID cateId;
+
+    public Entry(UUID expenseId, int iconResId, String title, String date, String amount,UUID cateId) {
+        ExpenseId = expenseId;
+        this.iconResId = iconResId;
+        this.title = title;
+        this.date = date;
+        this.amount = amount;
+        this.cateId=cateId;
+    }
 
     public Entry(int iconResId, String title, String date, String amount) {
         this.iconResId = iconResId;
@@ -12,6 +25,8 @@ public class Entry {
         this.date = date;
         this.amount = amount;
     }
+
+
 
     public int getIconResId() {
         return iconResId;
@@ -43,5 +58,21 @@ public class Entry {
 
     public void setAmount(String amount) {
         this.amount = amount;
+    }
+
+    public UUID getExpenseId() {
+        return ExpenseId;
+    }
+
+    public void setExpenseId(UUID expenseId) {
+        ExpenseId = expenseId;
+    }
+
+    public UUID getCateId() {
+        return cateId;
+    }
+
+    public void setCateId(UUID cateId) {
+        this.cateId = cateId;
     }
 }

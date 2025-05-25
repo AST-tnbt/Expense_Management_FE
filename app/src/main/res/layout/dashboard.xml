@@ -75,6 +75,7 @@
                         android:textSize="16sp"
                         android:textColor="#FFFFFF" />
                     <TextView
+                        android:id="@+id/sumSpend"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="24dp"

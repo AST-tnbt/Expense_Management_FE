@@ -1,11 +1,13 @@
 package com.example.expense_management.activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -52,27 +54,37 @@ public class AddExpense extends AppCompatActivity {
         category = findViewById(R.id.categoryDropdown);
         SharedPreferences prefs = getSharedPreferences("TokenStore", Context.MODE_PRIVATE);
         String accessToken = prefs.getString("access_token", null);
+        SharedPreferences userPrefs = getSharedPreferences("UserStore", Context.MODE_PRIVATE);
+        String userId = userPrefs.getString("id", null);
         ApiService apiService = new ApiService(this, Volley.newRequestQueue(this));
 
-        apiService.getAllCategories(accessToken, new CategoriesCallback() {
-            @Override
-            public void onSuccess(List<CategoriesResponse> categories) {
-                categoriesList = categories;
-                List<String> titles = new ArrayList<>();
-                for (CategoriesResponse cat : categories) {
-                    titles.add(cat.getTitle());
-                }
+        if (userId == null || accessToken == null) {
+            Toast.makeText(this, "Thiếu thông tin người dùng", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(AddExpense.this,
-                        android.R.layout.simple_dropdown_item_1line, titles);
-                category.setAdapter(adapter);
-            }
+        UUID userUUID = UUID.fromString(userId);
 
-            @Override
-            public void onError(String error) {
-                Toast.makeText(AddExpense.this, error, Toast.LENGTH_SHORT).show();
-            }
-        });
+        apiService.fetchCategoriesByUserId(
+                accessToken,
+                userUUID,
+                categories -> {
+                    categoriesList = categories;
+                    List<String> titles = new ArrayList<>();
+                    for (CategoriesResponse cat : categories) {
+                        titles.add(cat.getTitle());
+                    }
+
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                            AddExpense.this,
+                            android.R.layout.simple_dropdown_item_1line,
+                            titles
+                    );
+                    category.setAdapter(adapter);
+                },
+                error -> Toast.makeText(AddExpense.this, "Lỗi khi tải danh mục: " + error, Toast.LENGTH_SHORT).show()
+        );
+
 
         category.setOnItemClickListener((parent, view, position, id) -> {
             CategoriesResponse selectedCategory = categoriesList.get(position);
@@ -100,6 +112,13 @@ public class AddExpense extends AppCompatActivity {
         addBtn.setOnClickListener(v -> {
            addExpense();
         });
+        Button addCateBtn = findViewById(R.id.addCateBtn);
+
+        addCateBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(AddExpense.this, addTitle.class);
+            startActivity(intent);
+        });
+
     }
     private void addExpense() {
         SharedPreferences userPrefs = getSharedPreferences("UserStore", Context.MODE_PRIVATE);
@@ -141,7 +160,10 @@ public class AddExpense extends AppCompatActivity {
                     Toast.makeText(this, "Đã thêm chi tiêu", Toast.LENGTH_SHORT).show();
                     clearForm();
                 },
-                error -> Toast.makeText(this, "Add failed: " + error, Toast.LENGTH_SHORT).show()
+                error -> {
+                    Log.e("AddExpenseError", "Lỗi khi thêm chi tiêu: " + error);
+                    Toast.makeText(this, "Add failed: " + error, Toast.LENGTH_SHORT).show();
+                }
         );
     }
     private void clearForm() {

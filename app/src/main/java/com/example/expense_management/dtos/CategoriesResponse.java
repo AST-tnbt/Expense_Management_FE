@@ -12,7 +12,10 @@ public class CategoriesResponse {
         this.title = title;
         this.iconId = iconId;
     }
-
+    public CategoriesResponse(String title, String iconId) {
+        this.title = title;
+        this.iconId = iconId;
+    }
     public UUID getCateId() {
         return cateId;
     }

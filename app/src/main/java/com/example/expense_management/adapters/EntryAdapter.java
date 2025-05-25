@@ -17,9 +17,17 @@ import java.util.List;
 public class EntryAdapter extends RecyclerView.Adapter<EntryAdapter.EntryViewHolder> {
 
     private List<Entry> entries;
+    private OnItemClickListener listener;
 
+    public interface OnItemClickListener {
+        void onItemClick(Entry entry);
+    }
     public EntryAdapter(List<Entry> entries) {
         this.entries = entries;
+    }
+    public EntryAdapter(List<Entry> entries, OnItemClickListener listener) {
+        this.entries = entries;
+        this.listener = listener;
     }
 
     @NonNull
@@ -36,6 +44,12 @@ public class EntryAdapter extends RecyclerView.Adapter<EntryAdapter.EntryViewHol
         holder.title.setText(entry.getTitle());
         holder.date.setText(entry.getDate());
         holder.amount.setText(entry.getAmount());
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onItemClick(entry);
+            }
+        });
     }
 
     @Override
@@ -53,6 +67,7 @@ public class EntryAdapter extends RecyclerView.Adapter<EntryAdapter.EntryViewHol
             title = itemView.findViewById(R.id.entry_title);
             date = itemView.findViewById(R.id.entry_date);
             amount = itemView.findViewById(R.id.entry_amount);
+
         }
     }
 }
