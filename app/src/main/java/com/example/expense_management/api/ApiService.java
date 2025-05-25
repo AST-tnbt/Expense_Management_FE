@@ -108,12 +108,15 @@ public class ApiService {
                         List<ExpenseResponse> expenseList = new ArrayList<>();
                         for (int i = 0; i < response.length(); i++) {
                             JSONObject obj = response.getJSONObject(i);
+                            String expenseStr = obj.getString("expenseId");
+                            UUID expenseId = UUID.fromString(expenseStr);
                             String date = obj.getString("date");
                             String spend = obj.getString("spend");
-                            String categoryName = obj.getString("categoryName");
+                            String categoryName = obj.getString("title");
                             String iconId = obj.getString("iconId");
-
-                            expenseList.add(new ExpenseResponse(date, spend, categoryName, iconId));
+                            String cateIdStr = obj.getString("cateId");
+                            UUID cateId = UUID.fromString(cateIdStr);
+                            expenseList.add(new ExpenseResponse(expenseId,date, spend, categoryName, iconId,cateId));
                         }
                         successCallback.onSuccess(expenseList);
                     } catch (JSONException e) {
@@ -133,7 +136,51 @@ public class ApiService {
 
         requestQueue.add(request);
     }
+    public void fetchRecentExpenses(
+            String accessToken,
+            UUID userId,
+            SuccessListenerExpense successCallback,
+            ErrorListenerExpense errorCallback
+    ) {
+        String url = baseUrl + "/expenses/recent/" + userId;
 
+        JsonArrayRequest request = new JsonArrayRequest(
+                Request.Method.GET,
+                url,
+                null,
+                response -> {
+                    try {
+                        List<ExpenseResponse> expenseList = new ArrayList<>();
+                        for (int i = 0; i < response.length(); i++) {
+                            JSONObject obj = response.getJSONObject(i);
+                            String expenseStr = obj.getString("expenseId");
+                            UUID expenseId = UUID.fromString(expenseStr);
+                            String date = obj.getString("date");
+                            String spend = obj.getString("spend");
+                            String categoryName = obj.getString("title");
+                            String iconId = obj.getString("iconId");
+                            String cateIdStr = obj.getString("cateId");
+                            UUID cateId = UUID.fromString(cateIdStr);
+                            expenseList.add(new ExpenseResponse(expenseId,date, spend, categoryName, iconId,cateId));
+                        }
+                        successCallback.onSuccess(expenseList);
+                    } catch (JSONException e) {
+                        errorCallback.onError("Lỗi xử lý dữ liệu JSON");
+                    }
+                },
+                error -> errorCallback.onError("Lỗi kết nối: " + error.toString())
+        ) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + accessToken);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+
+        requestQueue.add(request);
+    }
     public void fetchCategoriesByUserId(
             String accessToken,
             UUID userId,
@@ -183,8 +230,15 @@ public class ApiService {
     public interface ErrorListener {
         void onError(String errorMessage);
     }
+    public interface SuccessListenerSumSpend {
+        void onSuccess(BigDecimal spend);
+    }
+
+    public interface ErrorListenerSumSpend {
+        void onError(String errorMessage);
+    }
     public interface SuccessListenerExpense {
-        void onSuccess(List<ExpenseResponse> categories);
+        void onSuccess(List<ExpenseResponse> expenses);
     }
 
     public interface ErrorListenerExpense {
@@ -363,6 +417,104 @@ public class ApiService {
 
         requestQueue.add(deleteRequest);
     }
+    public void updateExpense(String accessToken, UUID expenseId, String userId, String date, BigDecimal spend, String cateId,
+                              Runnable onSuccess, Consumer<String> onError) {
+        String url = baseUrl + "/expenses/" + expenseId;
+
+        JSONObject body = new JSONObject();
+        try {
+            body.put("userId", userId);
+            body.put("date", date);
+            body.put("spend", spend);
+            body.put("cateId", cateId);
+        } catch (JSONException e) {
+            onError.accept("Invalid data");
+            return;
+        }
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, url, body,
+                response -> onSuccess.run(),
+                error -> {
+                    String errMsg = error.networkResponse != null
+                            ? new String(error.networkResponse.data)
+                            : "Unknown error";
+                    onError.accept(errMsg);
+                }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + accessToken);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+
+        requestQueue.add(request);
+    }
+
+    public void deleteExpense(
+            String accessToken,
+            UUID expenseId,
+            SuccessListenerExpense successCallback,
+            ErrorListenerExpense errorCallback
+    ) {
+        String url = baseUrl + "/expenses/" + expenseId;
+
+        StringRequest deleteRequest = new StringRequest(
+                Request.Method.DELETE,
+                url,
+                response -> successCallback.onSuccess(null),
+                error -> {
+                    String errorMessage = "Lỗi xoá chi tiêu";
+                    if (error.networkResponse != null && error.networkResponse.data != null) {
+                        errorMessage = new String(error.networkResponse.data);
+                    }
+                    errorCallback.onError(errorMessage);
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + accessToken);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+
+        requestQueue.add(deleteRequest);
+    }
+    public void getMonthlyExpenseTotal(String accessToken, UUID userId,
+                                       SuccessListenerSumSpend successCallback,
+                                       ErrorListenerSumSpend errorCallback) {
+        String url = baseUrl + "/expenses/monthly-total/" + userId;
+
+        StringRequest request = new StringRequest(Request.Method.GET, url,
+                response -> {
+                    try {
+                        BigDecimal total = new BigDecimal(response.trim());
+                        successCallback.onSuccess(total);
+                    } catch (NumberFormatException e) {
+                        errorCallback.onError("Lỗi định dạng dữ liệu từ server");
+                    }
+                },
+                error -> {
+                    String errorMessage = "Lỗi kết nối";
+                    if (error.networkResponse != null && error.networkResponse.data != null) {
+                        errorMessage = new String(error.networkResponse.data);
+                    }
+                    errorCallback.onError(errorMessage); // BẠN ĐÃ THIẾU DÒNG NÀY
+                }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + accessToken);
+                return headers;
+            }
+        };
+
+        requestQueue.add(request);
+    }
+
 
 }
 

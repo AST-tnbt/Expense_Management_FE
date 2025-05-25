@@ -57,7 +57,6 @@
 
                 <!-- Inner layout with gradient background -->
                 <LinearLayout
-                    android:id="@id/ivProfile"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
@@ -76,6 +75,7 @@
                         android:textSize="16sp"
                         android:textColor="#FFFFFF" />
                     <TextView
+                        android:id="@+id/sumSpend"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="24dp"

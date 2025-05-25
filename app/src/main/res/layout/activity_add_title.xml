@@ -13,7 +13,7 @@
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
        android:text="Thêm loại chi phí"
-       android:fontFamily="@font/inter_18pt_bold"
+       android:fontFamily="@font/inter_24pt_bold"
        android:padding="40dp"/>
 
     <com.google.android.material.textfield.TextInputLayout
