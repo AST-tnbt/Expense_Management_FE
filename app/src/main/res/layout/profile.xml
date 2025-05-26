@@ -154,7 +154,6 @@
                 android:textColor="#FFFFFF"
                 android:fontFamily="@font/inter_18pt_semibold"
                 app:cornerRadius="12dp"
-                app:iconPadding="8dp"
                 app:backgroundTint="#1D41F9" />
 
             <com.google.android.material.button.MaterialButton

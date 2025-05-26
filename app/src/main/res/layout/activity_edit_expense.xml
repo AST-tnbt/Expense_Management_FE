@@ -144,25 +144,27 @@
                 android:id="@+id/editBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/gradient_background"
-                app:backgroundTint="@null"
+                app:backgroundTint="#1D41F9"
+                app:cornerRadius="12dp"
                 app:rippleColor="@color/primaryBrand"
-                android:text="SỬA CHI TIÊU"
+                android:text="Lưu thay đổi"
                 android:textColor="@color/white"
                 android:fontFamily="@font/inter_18pt_semibold"/>
 
             <com.google.android.material.button.MaterialButton
-                style="@style/Widget.Material3.Button.ElevatedButton"
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:id="@+id/deleteBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="Xóa chi tiêu"
+                android:textAllCaps="false"
                 android:layout_marginTop="12dp"
-                android:background="@drawable/gradient_background"
-                app:backgroundTint="@null"
-                app:rippleColor="@color/primaryBrand"
-                android:text="XÓA CHI TIÊU"
-                android:textColor="@color/white"
-                android:fontFamily="@font/inter_18pt_semibold" />
+                android:textColor="@color/redDark"
+                android:fontFamily="@font/inter_18pt_semibold"
+                app:cornerRadius="12dp"
+                app:iconPadding="8dp"
+                app:strokeWidth="2dp"
+                app:strokeColor="@color/redDark"/>
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

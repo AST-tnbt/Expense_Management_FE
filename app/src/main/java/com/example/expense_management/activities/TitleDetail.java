@@ -5,32 +5,22 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.expense_management.R;
 import com.example.expense_management.adapters.CategoryAdapter;
 import com.example.expense_management.api.ApiService;
 import com.example.expense_management.dtos.CategoriesResponse;
 import com.example.expense_management.models.Category;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 public class TitleDetail extends AppCompatActivity {
@@ -39,7 +29,7 @@ public class TitleDetail extends AppCompatActivity {
     private CategoryAdapter categoryAdapter;
     private List<Category> categoryList;
     private String base_url;
-    private ImageButton addCategoryButton ;
+    private MaterialButton addCategoryButton ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +44,7 @@ public class TitleDetail extends AppCompatActivity {
 
         addCategoryButton.setOnClickListener(v -> {
             // Xử lý khi người dùng nhấn nút thêm danh mục
-            Intent intent = new Intent(TitleDetail.this, addTitle.class); // Thay bằng tên activity bạn tạo
+            Intent intent = new Intent(TitleDetail.this, AddTitle.class); // Thay bằng tên activity bạn tạo
             startActivity(intent);
         });
         categoryAdapter = new CategoryAdapter(this, categoryList, new CategoryAdapter.OnItemClickListener() {

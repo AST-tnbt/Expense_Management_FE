@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.toolbox.Volley;
 import com.example.expense_management.R;
 import com.example.expense_management.api.ApiService;
-import com.example.expense_management.dtos.CategoriesCallback;
 import com.example.expense_management.dtos.CategoriesResponse;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -115,7 +114,7 @@ public class AddExpense extends AppCompatActivity {
         Button addCateBtn = findViewById(R.id.addCateBtn);
 
         addCateBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(AddExpense.this, addTitle.class);
+            Intent intent = new Intent(AddExpense.this, AddTitle.class);
             startActivity(intent);
         });
 

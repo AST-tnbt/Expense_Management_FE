@@ -127,7 +127,7 @@ public class EditExpense extends AppCompatActivity {
         Button addCateBtn = findViewById(R.id.addCateBtn);
 
         addCateBtn.setOnClickListener(v -> {
-            Intent intentAddCate = new Intent(EditExpense.this, addTitle.class);
+            Intent intentAddCate = new Intent(EditExpense.this, AddTitle.class);
             startActivity(intentAddCate);
         });
         // Sự kiện sửa
