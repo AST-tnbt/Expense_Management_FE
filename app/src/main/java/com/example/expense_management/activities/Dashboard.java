@@ -60,9 +60,20 @@ public class Dashboard extends Fragment {
         ApiService apiService = new ApiService(requireContext(), Volley.newRequestQueue(requireContext()));
 
         TextView sumSpendText = view.findViewById(R.id.sumSpend);
+        
+        // Check if userIdStr is null before trying to convert it to UUID
+        if (userIdStr == null) {
+            Toast.makeText(getContext(), "Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.", Toast.LENGTH_LONG).show();
+            // Redirect to login screen
+            Intent intent = new Intent(getActivity(), MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            return view;
+        }
+        
         UUID userId = UUID.fromString(userIdStr);
 
-// Gọi API để lấy tổng chi tiêu tháng hiện tại
+        // Gọi API để lấy tổng chi tiêu tháng hiện tại
         apiService.getMonthlyExpenseTotal(accessToken, userId,
                 total -> {
                     String formatted = String.format("%,.0f VNĐ", total.doubleValue());

@@ -25,7 +25,7 @@
             android:name=".activities.EditCategoryActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.addTitle"
+            android:name=".activities.AddTitle"
             android:exported="false" />
         <activity
             android:name=".activities.TitleDetail"
