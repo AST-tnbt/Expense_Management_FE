@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -72,8 +71,6 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-
-        // Chuẩn bị dữ liệu JSON để gửi lên server
         JSONObject requestBody = new JSONObject();
         try {
             requestBody.put("email", email);
@@ -82,10 +79,8 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        // URL API backend
-        String url ="http://10.0.2.2:8000/auth/login";
+        String url = baseUrl + "/auth/login";
 
-        // Gửi request
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST,
                 url,
@@ -100,10 +95,7 @@ public class MainActivity extends AppCompatActivity {
                         editor.putString("refresh_token", refreshToken);
                         editor.apply();
                         Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-                        ApiService apiService = new ApiService(this, Volley.newRequestQueue(this));
-                        apiService.getInfo(accessToken);
-                        Intent intent = new Intent(MainActivity.this, FragmentActivity.class);
-                        startActivity(intent);
+                        getUserInfoAndNavigate(accessToken);
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
                     }
@@ -114,7 +106,53 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
 
-        // Thêm request vào queue
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    private void getUserInfoAndNavigate(String accessToken) {
+        String url = baseUrl + "/users/me";
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.GET,
+                url,
+                null,
+                response -> {
+                    try {
+                        String fullName = response.getString("fullName");
+                        String email = response.getString("email");
+                        String dob = response.getString("birthDay");
+                        String gender = response.getString("gender");
+                        String id = response.getString("id");
+
+                        SharedPreferences sharedPreferences = getSharedPreferences("UserStore", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("fullName", fullName);
+                        editor.putString("email", email);
+                        editor.putString("birthDay", dob);
+                        editor.putString("gender", gender);
+                        editor.putString("id", id);
+                        editor.apply();
+
+                        // Now that we have saved the user info, navigate to the main app
+                        Intent intent = new Intent(MainActivity.this, FragmentActivity.class);
+                        startActivity(intent);
+                    } catch (JSONException e) {
+                        Toast.makeText(this, "Lỗi khi xử lý thông tin người dùng", Toast.LENGTH_SHORT).show();
+                        Log.e("UserInfoError", "Lỗi khi xử lý thông tin người dùng", e);
+                    }
+                },
+                error -> {
+                    Toast.makeText(this, "Lỗi khi lấy thông tin người dùng", Toast.LENGTH_SHORT).show();
+                    Log.e("UserInfoError", "Lỗi khi lấy thông tin người dùng", error);
+                }
+        ) {
+            @Override
+            public java.util.Map<String, String> getHeaders() {
+                java.util.Map<String, String> headers = new java.util.HashMap<>();
+                headers.put("Authorization", "Bearer " + accessToken);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
         requestQueue.add(jsonObjectRequest);
     }
 
@@ -156,12 +194,13 @@ public class MainActivity extends AppCompatActivity {
             public java.util.Map<String, String> getHeaders() {
                 java.util.Map<String, String> headers = new java.util.HashMap<>();
                 headers.put("Authorization", "Bearer " + accessToken);
-                headers.put("Content-Type", "application/json"); // optional, but good to add
+                headers.put("Content-Type", "application/json");
                 return headers;
             }
         };
         requestQueue.add(jsonObjectRequest);
     }
+    
     private void refreshTokens(String refreshToken) {
         String url = baseUrl + "/refresh";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
@@ -192,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
             public java.util.Map<String, String> getHeaders() {
                 java.util.Map<String, String> headers = new java.util.HashMap<>();
                 headers.put("Authorization", "Bearer " + refreshToken);
-                headers.put("Content-Type", "application/json"); // optional, but good to add
+                headers.put("Content-Type", "application/json");
                 return headers;
             }
         };

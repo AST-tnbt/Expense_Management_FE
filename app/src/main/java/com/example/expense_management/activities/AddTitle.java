@@ -1,7 +1,6 @@
 package com.example.expense_management.activities;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
@@ -15,9 +14,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.expense_management.R;
 import com.example.expense_management.adapters.IconGridAdapter;
@@ -25,14 +21,11 @@ import com.example.expense_management.api.ApiService;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-public class addTitle extends AppCompatActivity {
+public class AddTitle extends AppCompatActivity {
 
     private TextInputEditText iconEditText, titleEditText;
     private TextInputLayout iconInputLayout;
@@ -64,7 +57,7 @@ public class addTitle extends AppCompatActivity {
 
         for (Field field : drawables) {
             String name = field.getName();
-            if (name.endsWith("_24px")) {
+            if (name.endsWith("_category")) {
                 iconList.add(name);
             }
         }
@@ -120,7 +113,7 @@ public class addTitle extends AppCompatActivity {
         apiService.addCategory(accessToken, userId, title, selectedIconId,
                 () -> {
                     Toast.makeText(this, "Thêm danh mục thành công", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(addTitle.this, TitleDetail.class);
+                    Intent intent = new Intent(AddTitle.this, TitleDetail.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     finish();
