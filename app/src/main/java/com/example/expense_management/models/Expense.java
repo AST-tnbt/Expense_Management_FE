@@ -2,7 +2,7 @@ package com.example.expense_management.models;
 
 import java.util.UUID;
 
-public class Entry {
+public class Expense {
     private UUID ExpenseId;
     private int iconResId;
     private String title;
@@ -10,7 +10,7 @@ public class Entry {
     private String amount;
     private UUID cateId;
 
-    public Entry(UUID expenseId, int iconResId, String title, String date, String amount,UUID cateId) {
+    public Expense(UUID expenseId, int iconResId, String title, String date, String amount, UUID cateId) {
         ExpenseId = expenseId;
         this.iconResId = iconResId;
         this.title = title;
@@ -19,7 +19,7 @@ public class Entry {
         this.cateId=cateId;
     }
 
-    public Entry(int iconResId, String title, String date, String amount) {
+    public Expense(int iconResId, String title, String date, String amount) {
         this.iconResId = iconResId;
         this.title = title;
         this.date = date;
