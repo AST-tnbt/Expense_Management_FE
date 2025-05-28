@@ -18,7 +18,7 @@ import com.example.expense_management.R;
 import com.example.expense_management.adapters.EntryAdapter;
 import com.example.expense_management.api.ApiService;
 import com.example.expense_management.dtos.ExpenseResponse;
-import com.example.expense_management.models.Entry;
+import com.example.expense_management.models.Expense;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class ExpenseDetails extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private EntryAdapter adapter;
-    private List<Entry> entries = new ArrayList<>();
+    private List<Expense> entries = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,13 +41,13 @@ public class ExpenseDetails extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         loadExpenses();
-        adapter = new EntryAdapter(entries, entry -> {
+        adapter = new EntryAdapter(entries, expense -> {
             Intent intent = new Intent(ExpenseDetails.this,EditExpense.class);
-          intent.putExtra("expenseId", entry.getExpenseId().toString());
-            intent.putExtra("category", entry.getTitle());
-            intent.putExtra("date", entry.getDate());
-            intent.putExtra("amount", entry.getAmount());
-            intent.putExtra("cateId", entry.getCateId().toString());
+          intent.putExtra("expenseId", expense.getExpenseId().toString());
+            intent.putExtra("category", expense.getTitle());
+            intent.putExtra("date", expense.getDate());
+            intent.putExtra("amount", expense.getAmount());
+            intent.putExtra("cateId", expense.getCateId().toString());
 
             startActivity(intent);
         });
@@ -80,7 +80,7 @@ public class ExpenseDetails extends AppCompatActivity {
                                 res.getIconId(), "drawable", getPackageName());
                         if (iconResId == 0) iconResId = R.drawable.cake_24px;
                         double spendValue = Double.parseDouble(res.getSpend());
-                        entries.add(new Entry(res.getExpenseId(),iconResId, res.getCategoryName(), res.getDate(), formatter.format(spendValue) + " VNĐ",res.getCateId()));
+                        entries.add(new Expense(res.getExpenseId(),iconResId, res.getCategoryName(), res.getDate(), formatter.format(spendValue) + " VNĐ",res.getCateId()));
                     }
                     runOnUiThread(() -> adapter.notifyDataSetChanged());
                 },
