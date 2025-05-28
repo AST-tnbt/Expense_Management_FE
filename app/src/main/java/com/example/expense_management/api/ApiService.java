@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonArrayRequest;
@@ -32,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import java.util.UUID;
@@ -224,6 +226,13 @@ public class ApiService {
 
         requestQueue.add(request);
     }
+    public interface SuccessListenerSuggest {
+        void onSuccess(String suggest);
+    }
+
+    public interface ErrorListenerSuggest {
+        void onError(String errorMessage);
+    }
     public interface SuccessListenerMonthAmount {
         void onSuccess(List<MonthAmount> MonthAmount);
     }
@@ -373,7 +382,7 @@ public class ApiService {
     }
     public void updateCategory(String accessToken, UUID cateId, String title, String iconId, String userId,
                                Runnable onSuccess, Consumer<String> onError) {
-        String url = "http://10.0.2.2:8000/categories/" + cateId;
+        String url = baseUrl + "/categories/" + cateId;
 
 
         try {
@@ -591,6 +600,38 @@ public class ApiService {
         requestQueue.add(request);
     }
 
+    public void fetchSuggestion(String token, UUID userId, BigDecimal expenseTarget,
+                                SuccessListenerSuggest success, BiConsumer<Integer, String> onError) {
+        String url = baseUrl + "/suggestions/" + userId + "?expenseTarget=" + expenseTarget;
 
+        StringRequest request = new StringRequest(Request.Method.GET, url,
+                success::onSuccess,
+                error -> {
+                    int statusCode = 0;
+                    String errorMsg = "Unknown error";
+
+                    if (error.networkResponse != null) {
+                        statusCode = error.networkResponse.statusCode;
+                        errorMsg = new String(error.networkResponse.data);
+                    }
+
+                    onError.accept(statusCode, errorMsg);
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + token);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+        request.setRetryPolicy(new DefaultRetryPolicy(
+                10000, // 10 seconds timeout
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
+        requestQueue.add(request);
+    }
 }
 

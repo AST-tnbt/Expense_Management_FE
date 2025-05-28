@@ -37,7 +37,7 @@
                 android:id="@+id/descriptionText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Danh sách chi phí tiêu dùng trong tháng"
+                android:text="Danh sách chi phí tiêu dùng"
                 android:textSize="16sp"
                 android:paddingBottom="16dp"/>
 

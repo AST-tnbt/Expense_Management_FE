@@ -162,7 +162,6 @@ public class EditExpense extends AppCompatActivity {
                     formattedDate = outputFormat.format(parsedDate);
                     break;
                 } catch (Exception ignored) {
-                    // thử định dạng tiếp theo
                 }
             }
 

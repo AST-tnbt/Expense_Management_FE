@@ -56,9 +56,15 @@ public class Dashboard extends Fragment {
         });
         recyclerView.setAdapter(adapter);
         Button btnNext = view.findViewById(R.id.plotBtn);
+        Button analyticBtn = view.findViewById(R.id.analyticBtn);
 
         btnNext.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), ExpenseAnalyst.class);
+            startActivity(intent);
+        });
+
+        analyticBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), ExpenseSuggestion.class);
             startActivity(intent);
         });
 
@@ -118,7 +124,37 @@ public class Dashboard extends Fragment {
         });
         return view;
     }
+    
+    @Override
+    public void onResume() {
+        super.onResume();
 
+        // Re-fetch monthly total
+        SharedPreferences userPrefs = requireContext().getSharedPreferences("UserStore", Context.MODE_PRIVATE);
+        String userIdStr = userPrefs.getString("id", null);
+        SharedPreferences tokenPrefs = requireContext().getSharedPreferences("TokenStore", Context.MODE_PRIVATE);
+        String accessToken = tokenPrefs.getString("access_token", null);
+        TextView sumSpendText = getView().findViewById(R.id.sumSpend);
+
+        if (userIdStr != null && accessToken != null) {
+            UUID userId = UUID.fromString(userIdStr);
+            ApiService apiService = new ApiService(requireContext(), Volley.newRequestQueue(requireContext()));
+
+            // Re-fetch monthly total
+            apiService.getMonthlyExpenseTotal(accessToken, userId,
+                    total -> {
+                        String formatted = String.format("%,.0f VNĐ", total.doubleValue());
+                        sumSpendText.setText(formatted);
+                    },
+                    errorMessage -> {
+                        sumSpendText.setText("Không thể tải dữ liệu");
+                        Log.e("MonthlyTotalError", errorMessage);
+                    });
+
+            // Re-fetch recent expenses
+            loadRecentExpenses();
+        }
+    }
     private void loadRecentExpenses() {
         SharedPreferences userPrefs = requireContext().getSharedPreferences("UserStore", Context.MODE_PRIVATE);
         String userIdStr = userPrefs.getString("id", null);
