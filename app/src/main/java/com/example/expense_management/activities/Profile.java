@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.expense_management.BuildConfig;
 import com.example.expense_management.R;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
@@ -63,6 +65,15 @@ public class Profile extends Fragment {
         TextInputEditText editTextEmail = view.findViewById(R.id.editTextEmail);
         TextInputEditText dateOfBirthInput = view.findViewById(R.id.dateOfBirthInput);
         AutoCompleteTextView genderDropdown = view.findViewById(R.id.genderDropdown);
+        MaterialButton btnChangepass = view.findViewById(R.id.btnChangePass);
+        if (btnChangepass != null) {
+            btnChangepass.setOnClickListener(v -> {
+                Intent intent = new Intent(requireContext(), ChangePassword.class);
+                startActivity(intent);
+            });
+        } else {
+            Log.e("ProfileFragment", "btnChangePass is null");
+        }
 
         String name = prefs.getString("fullName", "N/A");
         String email = prefs.getString("email", "N/A");
@@ -156,6 +167,7 @@ public class Profile extends Fragment {
 
         requestQueue = Volley.newRequestQueue(context);
         logoutBtn.setOnClickListener(v -> showLogoutConfirmDialog());
+
     }
 
     private void logout(String accessToken, String refreshToken) {

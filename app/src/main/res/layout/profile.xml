@@ -148,13 +148,13 @@
                 android:id="@+id/btnChangePass"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/inter_18pt_semibold"
                 android:text="Đổi mật khẩu"
                 android:textAllCaps="false"
-                android:layout_marginTop="12dp"
                 android:textColor="#FFFFFF"
-                android:fontFamily="@font/inter_18pt_semibold"
-                app:cornerRadius="12dp"
-                app:backgroundTint="#1D41F9" />
+                app:backgroundTint="#1D41F9"
+                app:cornerRadius="12dp" />
 
             <com.google.android.material.button.MaterialButton
                 style="@style/Widget.Material3.Button.OutlinedButton"
