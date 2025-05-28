@@ -77,7 +77,7 @@ public class EditCategoryActivity extends AppCompatActivity {
 
         for (Field field : drawables) {
             String name = field.getName();
-            if (name.endsWith("_24px")) {
+            if (name.endsWith("_category")) {
                 iconList.add(name);
             }
         }

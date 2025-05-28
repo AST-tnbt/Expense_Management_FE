@@ -24,6 +24,7 @@ import com.example.expense_management.dtos.ExpenseResponse;
 import com.example.expense_management.models.Entry;
 import com.google.android.material.card.MaterialCardView;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -129,17 +130,18 @@ public class Dashboard extends Fragment {
                 userId,
                 expenseResponses -> {
                     entries.clear();
+                    DecimalFormat formatter = new DecimalFormat("#,###.##");
                     for (ExpenseResponse res : expenseResponses) {
                         int iconResId = getResources().getIdentifier(
                                 res.getIconId(), "drawable", requireContext().getPackageName());
                         if (iconResId == 0) iconResId = R.drawable.cake_24px;
-
+                        double spendValue = Double.parseDouble(res.getSpend());
                         entries.add(new Entry(
                                 res.getExpenseId(),
                                 iconResId,
                                 res.getCategoryName(),
                                 res.getDate(),
-                                res.getSpend() + " VNĐ",
+                                formatter.format(spendValue) + " VNĐ",
                                 res.getCateId()
                         ));
                     }

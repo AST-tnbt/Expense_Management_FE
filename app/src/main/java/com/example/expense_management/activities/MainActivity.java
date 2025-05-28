@@ -135,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
                         // Now that we have saved the user info, navigate to the main app
                         Intent intent = new Intent(MainActivity.this, FragmentActivity.class);
                         startActivity(intent);
+                        finish();
                     } catch (JSONException e) {
                         Toast.makeText(this, "Lỗi khi xử lý thông tin người dùng", Toast.LENGTH_SHORT).show();
                         Log.e("UserInfoError", "Lỗi khi xử lý thông tin người dùng", e);
@@ -182,6 +183,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_LONG).show();
                         Intent intent = new Intent(MainActivity.this, FragmentActivity.class);
                         startActivity(intent);
+                        finish();
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
                     }

@@ -20,6 +20,7 @@ import com.example.expense_management.api.ApiService;
 import com.example.expense_management.dtos.ExpenseResponse;
 import com.example.expense_management.models.Entry;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -73,12 +74,13 @@ public class ExpenseDetails extends AppCompatActivity {
                 userId,
                 expenseResponses -> {
                     entries.clear();
+                    DecimalFormat formatter = new DecimalFormat("#,###.##");
                     for (ExpenseResponse res : expenseResponses) {
                         int iconResId = getResources().getIdentifier(
                                 res.getIconId(), "drawable", getPackageName());
                         if (iconResId == 0) iconResId = R.drawable.cake_24px;
-
-                        entries.add(new Entry(res.getExpenseId(),iconResId, res.getCategoryName(), res.getDate(), res.getSpend() + " VNĐ",res.getCateId()));
+                        double spendValue = Double.parseDouble(res.getSpend());
+                        entries.add(new Entry(res.getExpenseId(),iconResId, res.getCategoryName(), res.getDate(), formatter.format(spendValue) + " VNĐ",res.getCateId()));
                     }
                     runOnUiThread(() -> adapter.notifyDataSetChanged());
                 },
