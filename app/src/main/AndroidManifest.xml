@@ -19,6 +19,9 @@
             android:name=".activities.ChangePassword"
             android:exported="false" />
         <activity
+            android:name=".activities.ExpenseSuggestion"
+            android:exported="false" />
+        <activity
             android:name=".activities.ExpenseAnalyst"
             android:exported="false" />
         <activity

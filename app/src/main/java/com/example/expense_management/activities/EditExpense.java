@@ -162,7 +162,6 @@ public class EditExpense extends AppCompatActivity {
                     formattedDate = outputFormat.format(parsedDate);
                     break;
                 } catch (Exception ignored) {
-                    // thử định dạng tiếp theo
                 }
             }
 
@@ -188,17 +187,27 @@ public class EditExpense extends AppCompatActivity {
 
         // Sự kiện xóa
         deleteBtn.setOnClickListener(v -> {
-            apiService.deleteExpense(accessToken, expenseId,
-                    response -> {
-                        Toast.makeText(this, "Đã xóa chi tiêu", Toast.LENGTH_SHORT).show();
-                        finish();
-                    },
-                    error -> {
-                        Log.e("DeleteExpenseError", "Lỗi xóa: " + error);
-                        Toast.makeText(this, "Lỗi xóa: " + error, Toast.LENGTH_SHORT).show();
-                    }
-            );
+            new androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setTitle("Xác nhận xoá")
+                    .setMessage("Bạn có chắc chắn muốn xoá chi tiêu này không?")
+                    .setPositiveButton("Xoá", (dialog, which) -> {
+                        apiService.deleteExpense(accessToken, expenseId,
+                                response -> {
+                                    Toast.makeText(this, "Đã xóa chi tiêu", Toast.LENGTH_SHORT).show();
+                                    Intent dashboard = new Intent(EditExpense.this, FragmentActivity.class);
+                                    startActivity(dashboard);
+                                    finish();
+                                },
+                                error -> {
+                                    Log.e("DeleteExpenseError", "Lỗi xóa: " + error);
+                                    Toast.makeText(this, "Lỗi xóa: " + error, Toast.LENGTH_SHORT).show();
+                                }
+                        );
+                    })
+                    .setNegativeButton("Huỷ", null)
+                    .show();
         });
+
 
     }
 }

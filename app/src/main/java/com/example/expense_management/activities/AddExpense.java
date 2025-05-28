@@ -158,6 +158,9 @@ public class AddExpense extends AppCompatActivity {
                 () -> {
                     Toast.makeText(this, "Đã thêm chi tiêu", Toast.LENGTH_SHORT).show();
                     clearForm();
+                    Intent intent = new Intent(AddExpense.this, FragmentActivity.class);
+                    startActivity(intent);
+                    finish();
                 },
                 error -> {
                     Log.e("AddExpenseError", "Lỗi khi thêm chi tiêu: " + error);

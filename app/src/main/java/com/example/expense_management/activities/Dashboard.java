@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +25,9 @@ import com.example.expense_management.dtos.ExpenseResponse;
 import com.example.expense_management.models.Expense;
 import com.google.android.material.card.MaterialCardView;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,8 +40,7 @@ public class Dashboard extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState)
-    {
+                             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dashboard, container, false);
 
         recyclerView = view.findViewById(R.id.transactionList);
@@ -54,9 +56,15 @@ public class Dashboard extends Fragment {
         });
         recyclerView.setAdapter(adapter);
         Button btnNext = view.findViewById(R.id.plotBtn);
+        Button analyticBtn = view.findViewById(R.id.analyticBtn);
 
         btnNext.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), ExpenseAnalyst.class);
+            startActivity(intent);
+        });
+
+        analyticBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), ExpenseSuggestion.class);
             startActivity(intent);
         });
 
@@ -115,9 +123,38 @@ public class Dashboard extends Fragment {
             }
         });
         return view;
-
     }
+    
+    @Override
+    public void onResume() {
+        super.onResume();
 
+        // Re-fetch monthly total
+        SharedPreferences userPrefs = requireContext().getSharedPreferences("UserStore", Context.MODE_PRIVATE);
+        String userIdStr = userPrefs.getString("id", null);
+        SharedPreferences tokenPrefs = requireContext().getSharedPreferences("TokenStore", Context.MODE_PRIVATE);
+        String accessToken = tokenPrefs.getString("access_token", null);
+        TextView sumSpendText = getView().findViewById(R.id.sumSpend);
+
+        if (userIdStr != null && accessToken != null) {
+            UUID userId = UUID.fromString(userIdStr);
+            ApiService apiService = new ApiService(requireContext(), Volley.newRequestQueue(requireContext()));
+
+            // Re-fetch monthly total
+            apiService.getMonthlyExpenseTotal(accessToken, userId,
+                    total -> {
+                        String formatted = String.format("%,.0f VNĐ", total.doubleValue());
+                        sumSpendText.setText(formatted);
+                    },
+                    errorMessage -> {
+                        sumSpendText.setText("Không thể tải dữ liệu");
+                        Log.e("MonthlyTotalError", errorMessage);
+                    });
+
+            // Re-fetch recent expenses
+            loadRecentExpenses();
+        }
+    }
     private void loadRecentExpenses() {
         SharedPreferences userPrefs = requireContext().getSharedPreferences("UserStore", Context.MODE_PRIVATE);
         String userIdStr = userPrefs.getString("id", null);
@@ -137,17 +174,18 @@ public class Dashboard extends Fragment {
                 userId,
                 expenseResponses -> {
                     entries.clear();
+                    DecimalFormat formatter = new DecimalFormat("#,###.##");
                     for (ExpenseResponse res : expenseResponses) {
                         int iconResId = getResources().getIdentifier(
                                 res.getIconId(), "drawable", requireContext().getPackageName());
                         if (iconResId == 0) iconResId = R.drawable.cake_24px;
-
+                        double spendValue = Double.parseDouble(res.getSpend());
                         entries.add(new Expense(
                                 res.getExpenseId(),
                                 iconResId,
                                 res.getCategoryName(),
                                 res.getDate(),
-                                res.getSpend() + " VNĐ",
+                                formatter.format(spendValue) + " VNĐ",
                                 res.getCateId()
                         ));
                     }

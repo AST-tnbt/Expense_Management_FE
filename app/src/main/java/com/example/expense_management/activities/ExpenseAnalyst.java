@@ -164,39 +164,48 @@ public class ExpenseAnalyst extends AppCompatActivity {
         for (MonthAmount item : data) {
             entries.add(new Entry(item.month, (float)item.totalAmount));
         }
+
         LineDataSet dataSet = new LineDataSet(entries, "Chi tiêu theo tháng");
-        lineChart.setData(new LineData(dataSet));
-        pieChart.setVisibility(View.GONE);
+        dataSet.setDrawValues(false);
+
+        LineData lineData = new LineData(dataSet);
+        lineChart.setData(lineData);
+
+        lineChart.setDrawMarkers(true);
         lineChart.setVisibility(View.VISIBLE);
+        pieChart.setVisibility(View.GONE);
         lineChart.invalidate();
     }
 
     private void drawPieChart(List<CategoryAmount> data) {
+
         List<PieEntry> entries = new ArrayList<>();
         for (CategoryAmount item : data) {
             entries.add(new PieEntry((float)item.totalAmount, item.categoryTitle));
         }
         PieDataSet dataSet = new PieDataSet(entries, "");
+        dataSet.setDrawValues(false);
+//        dataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+        dataSet.setValueLineColor(Color.BLACK);
 
-// Tạo danh sách màu tuỳ ý (bạn có thể mở rộng thêm màu nếu cần)
         List<Integer> colors = new ArrayList<>();
-        colors.add(Color.parseColor("#A8E6CF")); // Mint Green
-        colors.add(Color.parseColor("#B2F7EF")); // Soft Teal
-        colors.add(Color.parseColor("#C3FDB8")); // Pale Emerald
-        colors.add(Color.parseColor("#B9FBC0")); // Pastel Mint
-        colors.add(Color.parseColor("#98FB98")); // Pale Green
-        colors.add(Color.parseColor("#AAF0D1")); // Magic Mint
-        colors.add(Color.parseColor("#90EE90")); // Light Green
-        colors.add(Color.parseColor("#B0FFCE")); // Minty Fresh
-        colors.add(Color.parseColor("#C1FFD7")); // Soft Spring Green
-        colors.add(Color.parseColor("#D2FFE8")); // Light Aqua Mint
+        colors.add(Color.parseColor("#FF6600"));
+        colors.add(Color.parseColor("#00CC66"));
+        colors.add(Color.parseColor("#0000FF"));
+        colors.add(Color.parseColor("#FFFF00"));
+        colors.add(Color.parseColor("#00FFFF"));
+        colors.add(Color.parseColor("#FF00FF"));
+        colors.add(Color.parseColor("#FF66CC"));
+        colors.add(Color.parseColor("#FF6600"));
+        colors.add(Color.parseColor("#CC33FF"));
+        colors.add(Color.parseColor("#005500"));
 
         dataSet.setColors(colors);
         dataSet.setValueTextSize(14f);
         dataSet.setValueTextColor(Color.BLACK);
 
-// Set dữ liệu và vẽ biểu đồ
         PieData pieData = new PieData(dataSet);
+        pieChart.setDrawEntryLabels(false);
         pieChart.setData(pieData);
         pieChart.setVisibility(View.VISIBLE);
         lineChart.setVisibility(View.GONE);
