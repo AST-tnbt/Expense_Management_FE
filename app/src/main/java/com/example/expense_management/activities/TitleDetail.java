@@ -62,32 +62,38 @@ public class TitleDetail extends AppCompatActivity {
                 Category category = categoryList.get(position);
                 UUID categoryId = category.getCateId();
 
-                // Lấy token từ SharedPreferences
-                SharedPreferences prefs = getSharedPreferences("TokenStore", Context.MODE_PRIVATE);
-                String accessToken = prefs.getString("access_token", null);
-
                 if (categoryId == null) {
                     Toast.makeText(TitleDetail.this, "Thiếu thông tin khi xoá", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                ApiService apiService = new ApiService(TitleDetail.this,Volley.newRequestQueue(TitleDetail.this));
-                apiService.deleteCategory(
-                        accessToken,
-                        categoryId,
-                        result -> {
-                            Toast.makeText(TitleDetail.this, "Xoá thành công", Toast.LENGTH_SHORT).show();
-                            categoryList.remove(position);
-                            categoryAdapter.notifyItemRemoved(position);
-                        },
-                        errorMsg -> {
-                            Log.e("DELETE_ERROR", errorMsg);
-                            Toast.makeText(TitleDetail.this, "Xoá thất bại: " + errorMsg, Toast.LENGTH_SHORT).show();
-                        }
-                );
-                }
+                // Show confirmation dialog
+                new androidx.appcompat.app.AlertDialog.Builder(TitleDetail.this)
+                    .setTitle("Xác nhận xoá")
+                    .setMessage("Bạn có chắc chắn muốn xoá danh mục này không?")
+                    .setPositiveButton("Xoá", (dialog, which) -> {
+                        // Proceed with deletion
+                        SharedPreferences prefs = getSharedPreferences("TokenStore", Context.MODE_PRIVATE);
+                        String accessToken = prefs.getString("access_token", null);
 
-
+                        ApiService apiService = new ApiService(TitleDetail.this, Volley.newRequestQueue(TitleDetail.this));
+                        apiService.deleteCategory(
+                                accessToken,
+                                categoryId,
+                                result -> {
+                                    Toast.makeText(TitleDetail.this, "Xoá thành công", Toast.LENGTH_SHORT).show();
+                                    categoryList.remove(position);
+                                    categoryAdapter.notifyItemRemoved(position);
+                                },
+                                errorMsg -> {
+                                    Log.e("DELETE_ERROR", errorMsg);
+                                    Toast.makeText(TitleDetail.this, "Xoá thất bại: " + errorMsg, Toast.LENGTH_SHORT).show();
+                                }
+                        );
+                    })
+                    .setNegativeButton("Huỷ", null)
+                    .show();
+            }
         });
         categoryRecyclerView.setAdapter(categoryAdapter);
 

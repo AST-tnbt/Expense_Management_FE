@@ -111,7 +111,7 @@ public class Register extends AppCompatActivity {
         }
 
         // URL API backend
-        String url ="http://10.0.2.2:8000/auth/signup";
+        String url = baseUrl + "/auth/signup";
 
         Log.d("MyAppTag", "URL: " + url);
         // Gửi request
