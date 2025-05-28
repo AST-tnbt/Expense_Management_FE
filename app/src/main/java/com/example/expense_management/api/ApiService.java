@@ -18,7 +18,9 @@ import com.example.expense_management.activities.FragmentActivity;
 import com.example.expense_management.activities.MainActivity;
 import com.example.expense_management.dtos.CategoriesCallback;
 import com.example.expense_management.dtos.CategoriesResponse;
+import com.example.expense_management.dtos.CategoryAmount;
 import com.example.expense_management.dtos.ExpenseResponse;
+import com.example.expense_management.dtos.MonthAmount;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -222,12 +224,25 @@ public class ApiService {
 
         requestQueue.add(request);
     }
+    public interface SuccessListenerMonthAmount {
+        void onSuccess(List<MonthAmount> MonthAmount);
+    }
 
+    public interface ErrorListenerMonthAmount {
+        void onError(String errorMessage);
+    }
     public interface SuccessListener {
         void onSuccess(List<CategoriesResponse> categories);
     }
 
     public interface ErrorListener {
+        void onError(String errorMessage);
+    }
+    public interface SuccessListenerMonthChart {
+        void onSuccess(List<CategoryAmount> categories);
+    }
+
+    public interface ErrorListenerMonthChart {
         void onError(String errorMessage);
     }
     public interface SuccessListenerSumSpend {
@@ -512,6 +527,67 @@ public class ApiService {
             }
         };
 
+        requestQueue.add(request);
+    }
+    public void fetchYearChart(String token, UUID userId, String year,
+                               SuccessListenerMonthAmount success, ErrorListenerMonthAmount error) {
+        String url = baseUrl + "/expenses/year-chart/" + userId + "?year=" + year;
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null,
+                response -> {
+                    try {
+                        List<MonthAmount> data = new ArrayList<>();
+                        for (int i = 0; i < response.length(); i++) {
+                            JSONObject obj = response.getJSONObject(i);
+                            int month = obj.getInt("month");
+                            double total = obj.getDouble("totalAmount");
+                            data.add(new MonthAmount(month, total));
+                        }
+                        success.onSuccess(data);
+                    } catch (JSONException e) {
+                        error.onError("Lỗi xử lý JSON");
+                    }
+                },
+                err -> error.onError("Lỗi kết nối: " + err.toString())
+        ) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + token);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    public void fetchMonthChart(String token, UUID userId, String month, String year,
+                                SuccessListenerMonthChart success, ErrorListenerMonthChart error) {
+        String url = baseUrl + "/expenses/month-chart/" + userId + "?month=" + month + "&year=" + year;
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null,
+                response -> {
+                    try {
+                        List<CategoryAmount> data = new ArrayList<>();
+                        for (int i = 0; i < response.length(); i++) {
+                            JSONObject obj = response.getJSONObject(i);
+                            String title = obj.getString("categoryTitle");
+                            double total = obj.getDouble("totalAmount");
+                            data.add(new CategoryAmount(title, total));
+                        }
+                        success.onSuccess(data);
+                    } catch (JSONException e) {
+                        error.onError("Lỗi xử lý JSON");
+                    }
+                },
+                err -> error.onError("Lỗi kết nối: " + err.toString())
+        ) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + token);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
         requestQueue.add(request);
     }
 

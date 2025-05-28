@@ -10,22 +10,22 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.expense_management.R;
-import com.example.expense_management.models.Entry;
+import com.example.expense_management.models.Expense;
 
 import java.util.List;
 
 public class EntryAdapter extends RecyclerView.Adapter<EntryAdapter.EntryViewHolder> {
 
-    private List<Entry> entries;
+    private List<Expense> entries;
     private OnItemClickListener listener;
 
     public interface OnItemClickListener {
-        void onItemClick(Entry entry);
+        void onItemClick(Expense expense);
     }
-    public EntryAdapter(List<Entry> entries) {
+    public EntryAdapter(List<Expense> entries) {
         this.entries = entries;
     }
-    public EntryAdapter(List<Entry> entries, OnItemClickListener listener) {
+    public EntryAdapter(List<Expense> entries, OnItemClickListener listener) {
         this.entries = entries;
         this.listener = listener;
     }
@@ -39,15 +39,15 @@ public class EntryAdapter extends RecyclerView.Adapter<EntryAdapter.EntryViewHol
 
     @Override
     public void onBindViewHolder(@NonNull EntryViewHolder holder, int position) {
-        Entry entry = entries.get(position);
-        holder.icon.setImageResource(entry.getIconResId());
-        holder.title.setText(entry.getTitle());
-        holder.date.setText(entry.getDate());
-        holder.amount.setText(entry.getAmount());
+        Expense expense = entries.get(position);
+        holder.icon.setImageResource(expense.getIconResId());
+        holder.title.setText(expense.getTitle());
+        holder.date.setText(expense.getDate());
+        holder.amount.setText(expense.getAmount());
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onItemClick(entry);
+                listener.onItemClick(expense);
             }
         });
     }

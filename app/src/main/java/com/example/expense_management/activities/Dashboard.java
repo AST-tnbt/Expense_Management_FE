@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,11 +21,10 @@ import com.example.expense_management.R;
 import com.example.expense_management.adapters.EntryAdapter;
 import com.example.expense_management.api.ApiService;
 import com.example.expense_management.dtos.ExpenseResponse;
-import com.example.expense_management.models.Entry;
+import com.example.expense_management.models.Expense;
 import com.google.android.material.card.MaterialCardView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,26 +32,34 @@ public class Dashboard extends Fragment {
     public Dashboard() {}
     private RecyclerView recyclerView;
     private EntryAdapter adapter;
-    private List<Entry> entries = new ArrayList<>();
+    private List<Expense> entries = new ArrayList<>();
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             Bundle savedInstanceState)
+    {
         View view = inflater.inflate(R.layout.dashboard, container, false);
 
         recyclerView = view.findViewById(R.id.transactionList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new EntryAdapter(entries, entry -> {
+        adapter = new EntryAdapter(entries, expense -> {
             Intent intent = new Intent(getContext(), EditExpense.class);
-            intent.putExtra("expenseId", entry.getExpenseId().toString());
-            intent.putExtra("category", entry.getTitle());
-            intent.putExtra("date", entry.getDate());
-            intent.putExtra("amount", entry.getAmount());
-            intent.putExtra("cateId", entry.getCateId().toString());
+            intent.putExtra("expenseId", expense.getExpenseId().toString());
+            intent.putExtra("category", expense.getTitle());
+            intent.putExtra("date", expense.getDate());
+            intent.putExtra("amount", expense.getAmount());
+            intent.putExtra("cateId", expense.getCateId().toString());
             startActivity(intent);
         });
         recyclerView.setAdapter(adapter);
+        Button btnNext = view.findViewById(R.id.plotBtn);
+
+        btnNext.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), ExpenseAnalyst.class);
+            startActivity(intent);
+        });
+
         SharedPreferences userPrefs = requireContext().getSharedPreferences("UserStore", Context.MODE_PRIVATE);
         String userIdStr = userPrefs.getString("id", null);
         SharedPreferences tokenPrefs = requireContext().getSharedPreferences("TokenStore", Context.MODE_PRIVATE);
@@ -108,6 +115,7 @@ public class Dashboard extends Fragment {
             }
         });
         return view;
+
     }
 
     private void loadRecentExpenses() {
@@ -134,7 +142,7 @@ public class Dashboard extends Fragment {
                                 res.getIconId(), "drawable", requireContext().getPackageName());
                         if (iconResId == 0) iconResId = R.drawable.cake_24px;
 
-                        entries.add(new Entry(
+                        entries.add(new Expense(
                                 res.getExpenseId(),
                                 iconResId,
                                 res.getCategoryName(),
